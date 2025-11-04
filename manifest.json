@@ -1,0 +1,6 @@
+{
+  "version": "1.6.1",
+  "name": "incorta_mcp",
+  "executorPath": "plugin",
+  "executorClass": "IncortaMCPExecutor"
+}
