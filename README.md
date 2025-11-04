@@ -69,9 +69,12 @@ Add to `Cluster Configurations > IncortaCopilot > Plugins Configs`:
     "executor_args": {}
   }
 }
+```
 
+**Important**: After updating configuration, restart Analytics service.
 
-----
+### 2. Enable Plugin Upload
+
 In CMC `Advanced Configs`:
 
 ```json
@@ -81,19 +84,13 @@ In CMC `Advanced Configs`:
     "allow_custom_plugins_execution": true
   }
 }
-
 ```
 
-**Important**: After updating configuration, restart Analytics service.
-
-
-```
-
-### 2. Restart Copilot
+### 3. Restart Copilot
 
 - Go to Cloud Portal → Configuration
 - Disable then re-enable `Enable Copilot`
-- or type `/restart`
+- Or type `/restart` in the chat window
 
 ## Usage
 
