@@ -86,6 +86,9 @@ In CMC `Advanced Configs`:
 }
 ```
 
+** - make ANTHROPIC_API_KEY enviroment variable with claude api key **
+Defaule model in code: `claude-sonnet-4-20250514`
+
 ### 3. Restart Copilot
 
 - Go to Cloud Portal → Configuration
