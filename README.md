@@ -73,7 +73,54 @@ Add to `Cluster Configurations > IncortaCopilot > Plugins Configs`:
 
 **Important**: After updating configuration, restart Analytics service.
 
-### 2. Enable Plugin Upload
+### 2. API Key Configuration
+
+The plugin requires an Anthropic API key to function. You can configure it in one of two ways:
+
+#### Option A: Environment Variable (Recommended)
+
+Set the `ANTHROPIC_API_KEY` environment variable on the Analytics server:
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-api03-..."
+```
+
+#### Option B: CMC Configuration
+
+Add the API key to the `executor_args` in CMC `Plugins Configs`:
+
+```json
+{
+  "IncortaMCPOperator": {
+    "enabled": true,
+    "executor_args": {
+      "api_key": "sk-ant-api03-..."
+    }
+  }
+}
+```
+
+**Model Configuration**: The plugin uses `claude-sonnet-4-20250514` by default. This can be changed in the code if needed, but this has better limits.
+
+### 3. MCP Server Configuration (Optional)
+
+The plugin connects to the private endpoints version of the Incorta MCP server. By default, it uses a demo server, but you can configure your own:
+
+```json
+{
+  "IncortaMCPOperator": {
+    "executor_args": {
+      "mcp_server_url": "https://your-mcp-server.com/mcp/"
+    }
+  }
+}
+```
+
+**Default MCP Server**: `https://alone-recall-wait-era.trycloudflare.com/mcp/`
+
+The MCP server receives Incorta credentials from the user's session context automatically and in current setup we hardcode the SE environment internally.
+
+### 4. Enable Plugin Upload
 
 In CMC `Advanced Configs`:
 
@@ -86,10 +133,7 @@ In CMC `Advanced Configs`:
 }
 ```
 
-** - make ANTHROPIC_API_KEY enviroment variable with claude api key **
-Defaule model in code: `claude-sonnet-4-20250514`
-
-### 3. Restart Copilot
+### 5. Restart Copilot
 
 - Go to Cloud Portal → Configuration
 - Disable then re-enable `Enable Copilot`
@@ -104,12 +148,20 @@ In the Copilot chat window:
 ```
 
 The plugin will:
-1. **Task 1**: Query data and generate analysis (with optional HTML dashboard code according to the context) -> save response with extracting the html
-2. **Task 2**: recive and render the HTML dashboard (if present), as we can set for it a specified rendrer in frontend.
+1. **Task 1**: Query data and generate analysis (with optional HTML dashboard code according to the context) → save response with extracting the HTML part separately and remove it from the main response
+2. **Task 2**: Receive and render the HTML dashboard (if present), as we can set for it a specified renderer in frontend
 3. **Task 3**: Display combined results (final)
 
-
 ## Architecture
+
+### Resource Usage
+
+**Memory Storage Only**: This plugin stores all data in memory (RAM), NOT on disk:
+- Conversation history: Stored in Python global dictionary `_conversation_history`
+- MCP client connections: Stored in memory
+- Session data: In-memory only
+
+**Note**: Anthropic's prompt caching is server-side (on Anthropic's infrastructure), not local disk caching.
 
 ### File Structure
 
@@ -166,13 +218,11 @@ Default credentials (can be overridden by context):
 ## Changelog
 
 ### Version 1.6.1
-- ✅ Fixed prompt caching (system prompt only added once)
-- ✅ Increased max_tokens to 8192 for complete dashboards
-- ✅ Enhanced HTML validation with truncation detection
-- ✅ Updated to production demo credentials
-- ✅ added context management
-
-
+- Fixed prompt caching (system prompt only added once)
+- Increased max_tokens to 8192 for complete dashboards
+- Enhanced HTML validation with truncation detection
+- Updated to production demo credentials
+- Added context management
 
 ## Troubleshooting
 
